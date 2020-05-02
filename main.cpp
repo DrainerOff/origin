@@ -120,57 +120,57 @@ bool IsFileCorrect(data picture_data)
 {
     bool decision = 0;
 
-        QTextStream cout(stdout);
-        QTextStream cin(stdin);
+    QTextStream cout(stdout);
+    QTextStream cin(stdin);
 
-        picture_data.type = picture_data.type.toLower();
-        picture_data.mode = picture_data.mode.toLower();
+    picture_data.type = picture_data.type.toLower();
+    picture_data.mode = picture_data.mode.toLower();
 
-        // Проверка на поддерживаемое расширение файла
-        if(picture_data.type == "png" || picture_data.type == "jpg" || picture_data.type == "bmp")
-        {
-            decision = 1;
-        }
-        else
-        {
-            cout << QString::fromUtf8("Неверный формат файла") << endl;
-            return 0;
-        }
+    // Проверка на поддерживаемое расширение файла
+    if(picture_data.type == "png" || picture_data.type == "jpg" || picture_data.type == "bmp")
+    {
+        decision = 1;
+    }
+    else
+    {
+        cout << QString::fromUtf8("Неверный формат файла") << endl;
+        return 0;
+    }
 
-        // Проверка на поддерживаемый формат имени
-        if((picture_data.full_name.contains("(") && picture_data.full_name.contains(")")) && picture_data.size.width != 0 && picture_data.size.height != 0 && picture_data.full_name.contains("_"))
-        {
-            decision = 1;
-        }
-        else
-        {
-            cout << QString::fromUtf8("Неверное имя файла") << endl;
-            return  0;
-        }
+    // Проверка на поддерживаемый формат имени
+    if((picture_data.full_name.contains("(") && picture_data.full_name.contains(")")) && picture_data.size.width != 0 && picture_data.size.height != 0 && picture_data.full_name.contains("_"))
+    {
+        decision = 1;
+    }
+    else
+    {
+        cout << QString::fromUtf8("Неверное имя файла") << endl;
+        return  0;
+    }
 
-        // Проверка на поддерживаемый размер изображения
-        if(picture_data.size.width > 10 && picture_data.size.width < 10000 && picture_data.size.height > 10 && picture_data.size.height < 10000)
-        {
-            decision = 1;
-        }
-        else
-        {
-            cout << QString::fromUtf8("Изображение выходит за диапазон допустимого размера 10x10 - 10000x10000") << endl;
-            return 0;
-        }
+    // Проверка на поддерживаемый размер изображения
+    if(picture_data.size.width > 10 && picture_data.size.width < 10000 && picture_data.size.height > 10 && picture_data.size.height < 10000)
+    {
+        decision = 1;
+    }
+    else
+    {
+        cout << QString::fromUtf8("Изображение выходит за диапазон допустимого размера 10x10 - 10000x10000") << endl;
+        return 0;
+    }
 
-        // Проверка на правильность введнного типа обработки
-        if(picture_data.mode == "prop" || picture_data.mode == "exact")
-        {
-            decision = 1;
-        }
-        else
-        {
-            cout << QString::fromUtf8("Неправильно введен тип обработки изображения") << endl;
-            return 0;
-        }
+    // Проверка на правильность введнного типа обработки
+    if(picture_data.mode == "prop" || picture_data.mode == "exact")
+    {
+        decision = 1;
+    }
+    else
+    {
+        cout << QString::fromUtf8("Неправильно введен тип обработки изображения") << endl;
+        return 0;
+    }
 
-        return decision;
+    return decision;
 }
 
 void changeIMG(data picture)
