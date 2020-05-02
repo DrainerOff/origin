@@ -37,6 +37,43 @@ void changeIMG(data picture);
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication a(argc, argv);
+
+    setlocale(0, "");
+    QString picture_way;
+
+    QTextStream cin(stdin);
+
+    if(argc > 1)
+    {
+        picture_way = argv[1];
+    }
+    else
+        picture_way = cin.readLine(); // ввод пути
+
+
+    if(!picture_way.contains("\\"))
+    {
+
+       picture_way = QCoreApplication::applicationDirPath() + "/" + picture_way;
+       picture_way.replace("/","\\");
+
+    }
+
+
+    QString picture_way_copy = picture_way;
+
+    data picture_data;
+
+    picture_data = way_analayze(picture_way);
+
+    bool error = IsFileCorrect(picture_data);
+
+    if(error == 1)
+        changeIMG(picture_data);
+
+
+
     return 0;
 }
 
@@ -136,3 +173,61 @@ bool IsFileCorrect(data picture_data)
         return decision;
 }
 
+void changeIMG(data picture)
+{
+    char type_cpy[4] ;
+    strcpy(type_cpy, picture.type.toStdString().c_str());
+
+    QString path(picture.way+"Resized");
+    QDir dir;
+    if(!dir.exists(path))
+        dir.mkpath(path);
+
+    QString link_to_picture = picture.way + picture.name;
+    QString link = picture.way+"Resized"+"\\" + picture.full_name;
+
+    QRect rect(0, 0, picture.size.width, picture.size.height);
+    QImage original(link_to_picture);
+
+    if(picture.mode == "Prop" || picture.mode == "prop")
+    {
+        QImage scaled = original.scaled(picture.size.width, picture.size.height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        scaled.save(link, type_cpy, -1);
+    }
+    else if(picture.mode == "Exact" || picture.mode == "exact")
+    {
+        size real_picture_size;
+
+        QImage scaled = original.scaled(picture.size.width, picture.size.height, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+        scaled.save(link, type_cpy, -1);
+
+        real_picture_size.width = scaled.width();
+        real_picture_size.height = scaled.height();
+
+        if(real_picture_size.height - picture.size.height > 0)
+        {
+            int one = real_picture_size.height - picture.size.height;
+
+            int two = one/2;
+
+            QRect rect_first(0, two, picture.size.width, picture.size.height);
+
+            QImage cropped = scaled.copy(rect_first);
+            cropped.save(link, type_cpy, -1);
+        }
+
+        else if(real_picture_size.width - picture.size.width > 0)
+        {
+
+            int one = real_picture_size.width - picture.size.width;
+
+            int two = one/2;
+
+            QRect rect_first(two, 0, picture.size.width, picture.size.height);
+            QImage cropped = scaled.copy(rect_first);
+            cropped.save(link, type_cpy, -1);
+        }
+
+    }
+
+}
