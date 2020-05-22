@@ -19,7 +19,7 @@ struct size
 
 struct data
 {
-    QString way;
+    QString path;
     QString full_name;
     QString size_w;
     QString size_h;
@@ -29,7 +29,7 @@ struct data
     QString name;
 };
 
-data way_analayze(QString picture_way);
+data path_analayze(QString picture_path);
 
 bool IsFileCorrect(data picture_data);
 
@@ -40,51 +40,49 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     setlocale(0, "");
-    QString picture_way;
+    QString picture_path;
 
     QTextStream cin(stdin);
 
     if(argc > 1)
     {
-        picture_way = argv[1];
+        picture_path = argv[1];
     }
     else
-        picture_way = cin.readLine(); // ввод пути
+        picture_path = cin.readLine(); // ввод пути
 
 
-    if(!picture_way.contains("\\"))
+    if(!picture_path.contains("\\"))
     {
 
-       picture_way = QCoreApplication::applicationDirPath() + "/" + picture_way;
-       picture_way.replace("/","\\");
+        picture_path = QCoreApplication::applicationDirPath() + "/" + picture_path;
+        picture_path.replace("/","\\");
 
     }
 
 
-    QString picture_way_copy = picture_way;
+    QString picture_path_copy = picture_path;
 
     data picture_data;
 
-    picture_data = way_analayze(picture_way);
+    picture_data = path_analayze(picture_path);
 
     bool error = IsFileCorrect(picture_data);
 
     if(error == 1)
         changeIMG(picture_data);
 
-
-
     return 0;
 }
 
-data way_analayze(QString picture_way)
+data path_analayze(QString picture_path)
 {
     data picture;
 
-    picture.way = picture_way;
+    picture.path = picture_path;
 
 
-    picture.full_name = picture_way;
+    picture.full_name = picture_path;
     picture.full_name = picture.full_name.remove(0,picture.full_name.lastIndexOf('\\')+1); // Имя файла
 
     // Поиск размеров
@@ -109,7 +107,7 @@ data way_analayze(QString picture_way)
     picture.type = picture.type.remove(0, picture.type.lastIndexOf('.')+1);
 
     // Поиск имени изображения
-    picture.way = picture.way.remove(picture_way.length() - picture.full_name.length(), picture_way.length()+1);
+    picture.path = picture.path.remove(picture_path.length() - picture.full_name.length(), picture_path.length()+1);
     picture.name =  picture.full_name;
     picture.name = picture.name.remove(0,picture.name.lastIndexOf(')')+1);
 
@@ -178,13 +176,13 @@ void changeIMG(data picture)
     char type_cpy[4] ;
     strcpy(type_cpy, picture.type.toStdString().c_str());
 
-    QString path(picture.way+"Resized");
+    QString path(picture.path+"Resized");
     QDir dir;
     if(!dir.exists(path))
         dir.mkpath(path);
 
-    QString link_to_picture = picture.way + picture.name;
-    QString link = picture.way+"Resized"+"\\" + picture.full_name;
+    QString link_to_picture = picture.path + picture.name;
+    QString link = picture.path+"Resized"+"\\" + picture.full_name;
 
     QRect rect(0, 0, picture.size.width, picture.size.height);
     QImage original(link_to_picture);
@@ -206,12 +204,9 @@ void changeIMG(data picture)
 
         if(real_picture_size.height - picture.size.height > 0)
         {
-            int one = real_picture_size.height - picture.size.height;
+            int height = (real_picture_size.height - picture.size.height)/2;
 
-            int two = one/2;
-
-            QRect rect_first(0, two, picture.size.width, picture.size.height);
-
+            QRect rect_first(0, height, picture.size.width, picture.size.height);
             QImage cropped = scaled.copy(rect_first);
             cropped.save(link, type_cpy, -1);
         }
@@ -219,11 +214,9 @@ void changeIMG(data picture)
         else if(real_picture_size.width - picture.size.width > 0)
         {
 
-            int one = real_picture_size.width - picture.size.width;
+            int width = (real_picture_size.width - picture.size.width)/2;
 
-            int two = one/2;
-
-            QRect rect_first(two, 0, picture.size.width, picture.size.height);
+            QRect rect_first(width, 0, picture.size.width, picture.size.height);
             QImage cropped = scaled.copy(rect_first);
             cropped.save(link, type_cpy, -1);
         }
