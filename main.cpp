@@ -9,6 +9,7 @@
 #include <QtGui/QPainter>
 #include <QDir>
 
+
 using namespace std;
 
 struct size
@@ -25,7 +26,7 @@ struct data
     QString size_h;
     size size;
     QString mode;
-    QString type;
+    QString extension;
     QString name;
 };
 
@@ -34,6 +35,8 @@ data path_analayze(QString picture_path);
 bool IsFileCorrect(data picture_data);
 
 void changeIMG(data picture);
+
+void testing();
 
 int main(int argc, char *argv[])
 {
@@ -50,6 +53,13 @@ int main(int argc, char *argv[])
     }
     else
         picture_path = cin.readLine(); // ввод пути
+
+    if(picture_path == "Test" || picture_path == "test")
+    {
+        testing();
+        return 0;
+
+    }
 
 
     if(!picture_path.contains("\\"))
@@ -88,6 +98,8 @@ data path_analayze(QString picture_path)
     // Поиск размеров
     picture.size_w = picture.full_name;
     picture.size_w = picture.size_w.remove(picture.size_w.lastIndexOf('('),picture.full_name.length()+1);
+    if(picture.size_w.contains("("))
+        picture.size_w = picture.size_w.remove(picture.size_w.lastIndexOf('('),picture.full_name.length()+1);
     picture.size_h = picture.size_w;
     picture.size_w = picture.size_w.remove(picture.size_w.lastIndexOf('_'),sizeof(picture.size_w)+1);
     picture.size_h = picture.size_h.remove(0,picture.size_h.lastIndexOf('_')+1);
@@ -99,17 +111,17 @@ data path_analayze(QString picture_path)
     // Поиск типа обработки
     picture.mode = picture.full_name;
     picture.mode = picture.mode.remove(0, picture.mode.lastIndexOf('(')+1);
-    picture.mode = picture.mode.remove(picture.mode.lastIndexOf(')'), sizeof(picture.mode)+1);
-    picture.mode = picture.mode.remove(picture.mode.lastIndexOf(')', sizeof(picture.mode)));
+    int x =  picture.mode.size();
+    picture.mode = picture.mode.remove(picture.mode.lastIndexOf(')'), x+1);
 
     // Поиск расширения файла
-    picture.type = picture.full_name;
-    picture.type = picture.type.remove(0, picture.type.lastIndexOf('.')+1);
+    picture.extension = picture.full_name;
+    picture.extension = picture.extension.remove(0, picture.extension.lastIndexOf('.')+1);
 
     // Поиск имени изображения
     picture.path = picture.path.remove(picture_path.length() - picture.full_name.length(), picture_path.length()+1);
     picture.name =  picture.full_name;
-    picture.name = picture.name.remove(0,picture.name.lastIndexOf(')')+1);
+    picture.name = picture.name.remove(0,picture.name.indexOf(")")+1);
 
     return picture;
 }
@@ -121,11 +133,11 @@ bool IsFileCorrect(data picture_data)
     QTextStream cout(stdout);
     QTextStream cin(stdin);
 
-    picture_data.type = picture_data.type.toLower();
+    picture_data.extension = picture_data.extension.toLower();
     picture_data.mode = picture_data.mode.toLower();
 
     // Проверка на поддерживаемое расширение файла
-    if(picture_data.type == "png" || picture_data.type == "jpg" || picture_data.type == "bmp")
+    if(picture_data.extension == "png" || picture_data.extension == "jpg" || picture_data.extension == "bmp")
     {
         decision = 1;
     }
@@ -147,7 +159,7 @@ bool IsFileCorrect(data picture_data)
     }
 
     // Проверка на поддерживаемый размер изображения
-    if(picture_data.size.width > 10 && picture_data.size.width < 10000 && picture_data.size.height > 10 && picture_data.size.height < 10000)
+    if(picture_data.size.width >= 10 && picture_data.size.width <= 10000 && picture_data.size.height >= 10 && picture_data.size.height <= 10000)
     {
         decision = 1;
     }
@@ -157,7 +169,7 @@ bool IsFileCorrect(data picture_data)
         return 0;
     }
 
-    // Проверка на правильность введнного типа обработки
+    // Проверка на правильность введенного типа обработки
     if(picture_data.mode == "prop" || picture_data.mode == "exact")
     {
         decision = 1;
@@ -173,8 +185,8 @@ bool IsFileCorrect(data picture_data)
 
 void changeIMG(data picture)
 {
-    char type_cpy[4] ;
-    strcpy(type_cpy, picture.type.toStdString().c_str());
+    char extension_cpy[4] ;
+    strcpy(extension_cpy, picture.extension.toStdString().c_str());
 
     QString path(picture.path+"Resized");
     QDir dir;
@@ -190,14 +202,14 @@ void changeIMG(data picture)
     if(picture.mode == "Prop" || picture.mode == "prop")
     {
         QImage scaled = original.scaled(picture.size.width, picture.size.height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        scaled.save(link, type_cpy, -1);
+        scaled.save(link, extension_cpy, -1);
     }
     else if(picture.mode == "Exact" || picture.mode == "exact")
     {
         size real_picture_size;
 
         QImage scaled = original.scaled(picture.size.width, picture.size.height, Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
-        scaled.save(link, type_cpy, -1);
+        scaled.save(link, extension_cpy, -1);
 
         real_picture_size.width = scaled.width();
         real_picture_size.height = scaled.height();
@@ -208,7 +220,7 @@ void changeIMG(data picture)
 
             QRect rect_first(0, height, picture.size.width, picture.size.height);
             QImage cropped = scaled.copy(rect_first);
-            cropped.save(link, type_cpy, -1);
+            cropped.save(link, extension_cpy, -1);
         }
 
         else if(real_picture_size.width - picture.size.width > 0)
@@ -218,9 +230,125 @@ void changeIMG(data picture)
 
             QRect rect_first(width, 0, picture.size.width, picture.size.height);
             QImage cropped = scaled.copy(rect_first);
-            cropped.save(link, type_cpy, -1);
+            cropped.save(link, extension_cpy, -1);
         }
 
     }
 
 }
+
+    void testing()
+    {
+        data Default_prop, Default_exact, Jpg_quality,Max_size, Minimal_size;
+        Default_prop.path = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\";
+        Default_prop.extension = "jpg";
+        Default_prop.mode = "Prop";
+        Default_prop.full_name = "100_100(Prop)Default prop.jpg";
+        Default_prop.name = "Default prop.jpg";
+        Default_prop.size.height = 100;
+        Default_prop.size.width = 100;
+        changeIMG(Default_prop);
+        QString pth = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Perfect\\100_100(Prop)Default prop.jpg";
+        QString pth2 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Resized\\100_100(Prop)Default prop.jpg";
+        QImage original(pth);
+        QImage pic(pth2);
+        if(original != pic)
+        {
+            cout << "Error in test1 - Default prop" << endl;
+        }
+        else
+        {
+            cout << "test1(Default prop)is ok" << endl;
+        }
+
+        Default_exact.path = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\";
+        Default_exact.extension = "png";
+        Default_exact.mode = "Exact";
+        Default_exact.full_name = "350_163(Exact)Default exact.png";
+        Default_exact.name = "Default exact.png";
+        Default_exact.size.height = 163;
+        Default_exact.size.width = 350;
+        changeIMG(Default_exact);
+        QString pth3 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Perfect\\350_163(Exact)Default exact.png";
+        QString pth4 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Resized\\350_163(Exact)Default exact.png";
+        QImage original2(pth3);
+        QImage pic2(pth4);
+        if(original2 != pic2)
+        {
+            cout << "Error in test2 - Default_exact" << endl;
+        }
+        else
+        {
+            cout << "test2(Default_exact) is ok" << endl;
+        }
+
+        Jpg_quality.path = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\";
+        Jpg_quality.extension = "jpg";
+        Jpg_quality.mode = "Prop";
+        Jpg_quality.full_name = "350_350(Prop)Jpg quality.jpg";
+        Jpg_quality.name = "Jpg quality.jpg";
+        Jpg_quality.size.height = 350;
+        Jpg_quality.size.width = 350;
+        changeIMG(Jpg_quality);
+        QString pth5 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Perfect\\350_350(Prop)Jpg quality.jpg";
+        QString pth6 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Resized\\350_350(Prop)Jpg quality.jpg";
+        QImage original3(pth5);
+        QImage pic4(pth6);
+        if(original3 != pic4)
+        {
+            cout << "Error in test3 - Jpg_quality" << endl;
+        }
+        else
+        {
+            cout << "test3(Jpg_quality.jpg) is ok" << endl;
+        }
+
+        Max_size.path = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\";
+        Max_size.extension = "jpg";
+        Max_size.mode = "Exact";
+        Max_size.full_name = "1920_1080(Exact)Max size.jpg";
+        Max_size.name = "Max size.jpg";
+        Max_size.size.height = 1080;
+        Max_size.size.width = 1920;
+        changeIMG(Max_size);
+        QString pth7 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Perfect\\1920_1080(Exact)Max size.jpg";
+        QString pth8 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Resized\\1920_1080(Exact)Max size.jpg";
+        QImage original4(pth7);
+        QImage pic5(pth8);
+        if(original4 != pic5)
+        {
+            cout << "Error in test4 - Max size" << endl;
+        }
+        else
+        {
+            cout << "test4(Max size) is ok" << endl;
+        }
+
+        Minimal_size.path = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\";
+        Minimal_size.extension = "png";
+        Minimal_size.mode = "Exact";
+        Minimal_size.full_name = "10_10(Exact)Minimal size.png";
+        Minimal_size.name = "Minimal size.png";
+        Minimal_size.size.height = 10;
+        Minimal_size.size.width = 10;
+        changeIMG(Minimal_size);
+        QString pth9 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Perfect\\10_10(Exact)Minimal size.png";
+        QString pth10 = "C:\\Users\\Drainer\\Desktop\\KIMPO_\\Test\\Photos for tests\\Resized\\10_10(Exact)Minimal size.png";
+        QImage original5(pth9);
+        QImage pic6(pth10);
+        if(original5 != pic6)
+        {
+            cout << "Error in test5 - Minimal_size" << endl;
+        }
+        else
+        {
+            cout << "test5(Minimal_size) is ok" << endl;
+        }
+
+}
+
+
+
+
+
+
