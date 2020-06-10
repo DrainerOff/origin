@@ -241,7 +241,7 @@ void changeIMG(data picture)
 
     void testing()
     {
-        data Default_prop, Default_exact, Jpg_quality,Max_size, Minimal_size;
+        data Default_prop, Default_exact, Jpg_quality,Max_size, Minimal_size, bigger_size;
 
         Default_prop.path = QCoreApplication::applicationDirPath() + "/";
         Default_prop.path.replace("/","\\");
@@ -299,7 +299,7 @@ void changeIMG(data picture)
         {
             cout << "Error in test2 - Default_exact" << endl;
         }
-        else
+        else if(original2 == pic2)
         {
             cout << "test2(Default_exact) is ok" << endl;
         }
@@ -329,13 +329,13 @@ void changeIMG(data picture)
         {
             cout << "Error in test3 - Jpg_quality" << endl;
         }
-        else
+        else if(original3 == pic4)
         {
-            cout << "test3(Jpg_quality.jpg) is ok" << endl;
+            cout << "test3(Jpg_quality) is ok" << endl;
         }
 
-        Jpg_quality.path = QCoreApplication::applicationDirPath() + "/";
-        Jpg_quality.path.replace("/","\\");
+        Max_size.path = QCoreApplication::applicationDirPath() + "/";
+        Max_size.path.replace("/","\\");
 
         Max_size.extension = "jpg";
         Max_size.mode = "Exact";
@@ -359,13 +359,13 @@ void changeIMG(data picture)
         {
             cout << "Error in test4 - Max size" << endl;
         }
-        else
+        else if(original4 == pic5)
         {
             cout << "test4(Max size) is ok" << endl;
         }
 
-        Jpg_quality.path = QCoreApplication::applicationDirPath() + "/";
-        Jpg_quality.path.replace("/","\\");
+        Minimal_size.path = QCoreApplication::applicationDirPath() + "/";
+        Minimal_size.path.replace("/","\\");
 
         Minimal_size.extension = "png";
         Minimal_size.mode = "Exact";
@@ -389,9 +389,39 @@ void changeIMG(data picture)
         {
             cout << "Error in test5 - Minimal_size" << endl;
         }
-        else
+        else if(original5 == pic6)
         {
             cout << "test5(Minimal_size) is ok" << endl;
+        }
+
+        bigger_size.path = QCoreApplication::applicationDirPath() + "/";
+        bigger_size.path.replace("/","\\");
+
+        bigger_size.extension = "jpg";
+        bigger_size.mode = "Exact";
+        bigger_size.full_name = "9000_5280(Exact)bigger size.jpg";
+        bigger_size.name = "bigger size.jpg";
+        bigger_size.size.height = 5280;
+        bigger_size.size.width = 9000;
+
+        changeIMG(bigger_size);
+
+        QString pth11 = QCoreApplication::applicationDirPath() + "/" + "\\Perfect\\10_10(Exact)Minimal size.png";
+        pth3.replace("/","\\");
+
+        QString pth12 = QCoreApplication::applicationDirPath() + "/" + "\\Resized\\10_10(Exact)Minimal size.png";
+        pth.replace("/","\\");
+
+        QImage original6(pth11);
+        QImage pic7(pth11);
+
+        if(original6 != pic7)
+        {
+            cout << "Error in test6 - bigger_size" << endl;
+        }
+        else if(original6 == pic7)
+        {
+            cout << "test6(bigger_size) is ok" << endl;
         }
 
         getch();
