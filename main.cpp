@@ -1,3 +1,8 @@
+/*!
+* \file main.cpp
+* \brief ImgSizer
+*/
+
 #include <QCoreApplication>
 #include <iostream>
 #include <QString>
@@ -12,22 +17,24 @@
 
 using namespace std;
 
+/// Структура хранящая размеры изображения
 struct size
 {
-    int width = 0;
-    int height = 0;
+    int width = 0; ///< Ширина изображения
+    int height = 0; ///< Высота изображения
 };
 
+/// Структура хранящая данные об изображении
 struct data
 {
-    QString path;
-    QString full_name;
-    QString size_w;
-    QString size_h;
-    size size;
-    QString mode;
-    QString extension;
-    QString name;
+    QString path; ///< Путь к папке, где находится изображение
+    QString full_name; ///< Имя изображения с параметрами изображения
+    QString size_w; ///< Ширина изображения
+    QString size_h; ///< Высота изображения
+    size size; ///< Размеры изображения
+    QString mode; ///< Тип обработки изображения
+    QString extension; ///< Расширение изображения
+    QString name; ///< Имя изображения
 };
 
 data path_analayze(QString picture_path);
@@ -38,6 +45,12 @@ void changeIMG(data picture);
 
 void testing();
 
+/*!
+ Основная функция программы
+ \param argc[in] - Количество введенных параметров командной строки
+ \param *argv[][in] - Введенные парметры командной строки
+ \return 0 - Успешное выполнение
+ */
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -58,7 +71,6 @@ int main(int argc, char *argv[])
     {
         testing();
         return 0;
-
     }
 
 
@@ -67,7 +79,6 @@ int main(int argc, char *argv[])
 
         picture_path = QCoreApplication::applicationDirPath() + "/" + picture_path;
         picture_path.replace("/","\\");
-
     }
 
 
@@ -85,6 +96,11 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+/*!
+ Разбивает путь к изображению на составляющие
+ \param picture_path[in] - Путь к изображению
+ \return Структуру типа data
+ */
 data path_analayze(QString picture_path)
 {
     data picture;
@@ -126,6 +142,12 @@ data path_analayze(QString picture_path)
     return picture;
 }
 
+/*!
+ Проверяет можно ли обработать данное изображение
+ \param picture_data[in] - Структура типа data, хранящая информацию об изображении
+ \return 0 - Файл не подходит для обработки
+ \return 1 - Файл подходит для обработки
+ */
 bool IsFileCorrect(data picture_data)
 {
     bool decision = 0;
@@ -195,6 +217,10 @@ bool IsFileCorrect(data picture_data)
     return decision;
 }
 
+/*!
+ Функция обрезки изображения по заданным параметрам
+ \param data[in] - Структура типа data, хранящая информацию об изображении
+ */
 void changeIMG(data picture)
 {
     char extension_cpy[4] ;
@@ -248,6 +274,9 @@ void changeIMG(data picture)
     }
 }
 
+/*!
+ Тестирующая функция
+ */
 void testing()
 {
     data Default_prop, Default_exact, Jpg_quality,Max_size, Minimal_size, bigger_size;
