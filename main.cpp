@@ -182,6 +182,18 @@ bool IsFileCorrect(data picture_data)
         return 0;
     }
 
+    // Проверка на соотношение размера исходной картинки и требуемого
+    QImage test_pic(picture_data.path + picture_data.name);
+    if(picture_data.size.width <= test_pic.width() && picture_data.size.height <= test_pic.height())
+    {
+        decision = 1;
+    }
+    else
+    {
+        cout << QString::fromUtf8("Указанный размер больше исходного изображения") << endl;
+        return 0;
+    }
+
     return decision;
 }
 
