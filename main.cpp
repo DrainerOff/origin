@@ -158,6 +158,20 @@ bool IsFileCorrect(data picture_data)
     picture_data.extension = picture_data.extension.toLower();
     picture_data.mode = picture_data.mode.toLower();
 
+    // Проверка на наличие файла
+    QString test_path = picture_data.path + picture_data.name;
+    QDir test_dir_;
+    if(test_dir_.exists(test_path))
+    {
+        decision = 1;
+    }
+    else
+    {
+        cout << QString::fromUtf8("Файл с таким именем отсутствует") << endl;
+        return 0;
+    }
+
+
     // Проверка на поддерживаемое расширение файла
     if(picture_data.extension == "png" || picture_data.extension == "jpg" || picture_data.extension == "bmp")
     {
@@ -211,6 +225,19 @@ bool IsFileCorrect(data picture_data)
     else
     {
         cout << QString::fromUtf8("Указанный размер больше исходного изображения") << endl;
+        return 0;
+    }
+
+    // Проверка на наличие этого изображения среди обработанных
+    QString test_name = picture_data.path + "Resized\\" + picture_data.full_name;
+    QDir test_dir;
+    if(!test_dir.exists(test_name))
+    {
+        decision = 1;
+    }
+    else
+    {
+        cout << QString::fromUtf8("Данное изображение уже было обработано") << endl;
         return 0;
     }
 
